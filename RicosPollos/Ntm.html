@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nota de Remisión</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      background-color: #fff8c4;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .formulario {
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 30px;
+      background: #fffdf3;
+      border: 2px dashed #888;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .formulario h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .grupo {
+      margin-bottom: 15px;
+    }
+
+    .grupo label {
+      font-weight: bold;
+      font-size: 18px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .grupo input, .grupo select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #999;
+      box-sizing: border-box;
+    }
+
+    .grupo-checkbox {
+      margin-bottom: 25px;
+      padding: 10px;
+      background: #fdf8e4;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
+    }
+
+    .grupo-checkbox label {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .grupo-flex {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .grupo-flex input {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .botones {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff9900;
+    }
+
+    /* --- NO MODIFICAR ESTA SECCIÓN DE ABAJO --- */
+
+    .nota {
+      width: 700px;
+      margin: auto;
+      background: white;
+      border: 2px dashed black;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .fila-arriba {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border: 1px solid black;
+      background-image: url('tu-imagen-aqui.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .titulo-nota {
+      font-size: 36px;
+      font-weight: bold;
+      border: 2px solid black;
+      padding: 5px 20px;
+    }
+
+    .nombre-negocio {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .info-direccion {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 22px;
+    }
+
+    .info-box {
+      flex: 1;
+    }
+
+    .info-box p {
+      margin: 5px 0;
+      font-size: 22px;
+    }
+
+    .info-box span {
+      font-weight: bold;
+      font-size: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+      height: 30px;
+    }
+
+    #totalNota {
+      text-align: right;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="formulario">
+  <h2>NOTAS - Ricos Pollos Uruapan</h2>
+
+  <div class="grupo">
+    <label for="inputCalle">Calle</label>
+    <input type="text" id="inputCalle">
+  </div>
+
+  <div class="grupo">
+    <label for="inputColonia">Colonia</label>
+    <input type="text" id="inputColonia">
+  </div>
+
+  <div class="grupo">
+    <label for="inputTelefono">Teléfono</label>
+    <input type="text" id="inputTelefono">
+  </div>
+
+  <div class="grupo-checkbox">
+    <label><input type="checkbox" id="checkboxServicio" onchange="toggleServicio()"> Servicio de moto</label>
+    <div class="grupo-flex" style="display: none;" id="grupoServicio">
+      <input type="number" id="inputServicio" placeholder="Precio del servicio">
+    </div>
+  </div>
+
+  <div class="grupo-checkbox">
+    <label><input type="checkbox" id="checkboxCostilla" onchange="toggleCostilla()"> Agregar costilla</label>
+    <div class="grupo-flex" style="display: none;" id="grupoCostilla">
+      <input type="number" id="inputCantidadCostilla" placeholder="Cantidad">
+      <input type="number" id="inputPrecioCostilla" placeholder="Precio unitario">
+    </div>
+  </div>
+
+  <div class="grupo">
+    <label for="precioPollo">Precio por pollo</label>
+    <input type="number" id="precioPollo" value="150">
+  </div>
+
+  <div class="grupo">
+    <label for="cantidadPollos">Cantidad de pollos</label>
+    <select id="cantidadPollos">
+      <option value="0">Selecciona</option>
+    </select>
+  </div>
+</div>
+
+<div class="nota" id="nota">
+  <div class="fila-arriba">
+    <div class="logo"></div>
+    <div class="nombre-negocio">Ricos Pollos Uruapan</div>
+    <div class="titulo-nota">NOTA</div>
+  </div>
+  <div class="info-direccion">
+    <div class="info-box">
+      <p>Calle: <span id="mostrarCalle"></span></p>
+      <p>Colonia: <span id="mostrarColonia"></span></p>
+    </div>
+    <div class="info-box">
+      <p>Teléfono: <span id="mostrarTelefono"></span></p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>CANTIDAD</th>
+        <th>DESCRIPCIÓN</th>
+        <th>PRECIO UNITARIO</th>
+        <th>IMPORTE</th>
+      </tr>
+    </thead>
+    <tbody id="tabla">
+    </tbody>
+  </table>
+
+  <div id="totalNota">Total: $0.00</div>
+</div>
+
+<div class="botones">
+  <button onclick="actualizarNota()">Generar Nota</button>
+  <button onclick="window.print()">Imprimir Nota</button>
+  <button onclick="guardarComoImagen()">Guardar como Imagen</button>
+  <button onclick="guardarComoPDF()">Guardar como PDF</button>
+</div>
+
+<script>
+  for (let i = 1; i <= 50; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    document.getElementById("cantidadPollos").appendChild(option);
+  }
+
+  function toggleServicio() {
+    const checked = document.getElementById("checkboxServicio").checked;
+    document.getElementById("grupoServicio").style.display = checked ? "flex" : "none";
+  }
+
+  function toggleCostilla() {
+    const checked = document.getElementById("checkboxCostilla").checked;
+    document.getElementById("grupoCostilla").style.display = checked ? "flex" : "none";
+  }
+
+  function actualizarNota() {
+    const calle = document.getElementById("inputCalle").value;
+    const colonia = document.getElementById("inputColonia").value;
+    const tel = document.getElementById("inputTelefono").value;
+    const servicioChecked = document.getElementById("checkboxServicio").checked;
+    const servicio = parseFloat(document.getElementById("inputServicio").value) || 0;
+    const precio = parseFloat(document.getElementById("precioPollo").value);
+    const cantidad = parseInt(document.getElementById("cantidadPollos").value);
+
+    const costillaChecked = document.getElementById("checkboxCostilla").checked;
+    const cantidadCostilla = parseInt(document.getElementById("inputCantidadCostilla").value) || 0;
+    const precioCostilla = parseFloat(document.getElementById("inputPrecioCostilla").value) || 0;
+
+    document.getElementById("mostrarCalle").textContent = calle;
+    document.getElementById("mostrarColonia").textContent = colonia;
+    document.getElementById("mostrarTelefono").textContent = tel;
+
+    const tabla = document.getElementById("tabla");
+    tabla.innerHTML = "";
+
+    let total = 0;
+
+    if (cantidad > 0) {
+      const importe = cantidad * precio;
+      total += importe;
+      tabla.innerHTML += `
+        <tr>
+          <td>${cantidad}</td>
+          <td>Pollo rostizado</td>
+          <td>$${precio.toFixed(2)}</td>
+          <td>$${importe.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    if (costillaChecked && cantidadCostilla > 0 && precioCostilla > 0) {
+      const importe = cantidadCostilla * precioCostilla;
+      total += importe;
+      tabla.innerHTML += `
+        <tr>
+          <td>${cantidadCostilla}</td>
+          <td>Costilla</td>
+          <td>$${precioCostilla.toFixed(2)}</td>
+          <td>$${importe.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    if (servicioChecked && servicio > 0) {
+      tabla.innerHTML += `
+        <tr><td colspan="4">&nbsp;</td></tr>
+        <tr><td colspan="4">&nbsp;</td></tr>
+      `;
+      total += servicio;
+      tabla.innerHTML += `
+        <tr>
+          <td>1</td>
+          <td>Servicio de moto</td>
+          <td>$${servicio.toFixed(2)}</td>
+          <td>$${servicio.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    const filasTotales = 12;
+    const filasActuales = tabla.rows.length;
+    for (let i = filasActuales; i < filasTotales; i++) {
+      tabla.innerHTML += `
+        <tr>
+          <td>&nbsp;</td><td></td><td></td><td></td>
+        </tr>
+      `;
+    }
+
+    document.getElementById("totalNota").textContent = `Total: $${total.toFixed(2)}`;
+  }
+
+  function guardarComoImagen() {
+    const nota = document.getElementById("nota");
+    html2canvas(nota, {
+      useCORS: true,
+      scale: 2,
+    }).then(function(canvas) {
+      const enlace = document.createElement('a');
+      enlace.href = canvas.toDataURL("image/png");
+      enlace.download = `nota_remision_${Date.now()}.png`;
+      enlace.click();
+    });
+  }
+
+  function guardarComoPDF() {
+    window.print();
+  }
+</script>
+
+</body>
+</html>
