@@ -96,51 +96,62 @@
       background-color: #ff9900;
     }
 
-    /* --- NO MODIFICAR ESTA SECCIÓN DE ABAJO --- */
+    /* --- NUEVO FORMATO DE NOTA --- */
 
     .nota {
       width: 700px;
       margin: auto;
-      background: white;
-      border: 2px dashed black;
-      padding: 20px;
+      background: #ffffff;
+      border: 2px solid #444;
+      padding: 24px;
       box-sizing: border-box;
       position: relative;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .fila-arriba {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .logo {
-      width: 80px;
-      height: 80px;
-      border: 1px solid black;
-     background-image: url('https://raw.githubusercontent.com/pabloadrianrojas03/pabloadrianrojas03.github.io/main/RicosPollos/pollos.png');
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      background-image: url('https://raw.githubusercontent.com/pabloadrianrojas03/pabloadrianrojas03.github.io/main/RicosPollos/pollos.png');
       background-size: cover;
       background-position: center;
-    }
-
-    .titulo-nota {
-      font-size: 36px;
-      font-weight: bold;
-      border: 2px solid black;
-      padding: 5px 20px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      border: 1px solid #ccc;
     }
 
     .nombre-negocio {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
+      text-align: center;
+      flex: 1;
+      color: #333;
+    }
+
+    .titulo-nota {
+      font-size: 28px;
+      font-weight: bold;
+      border: 2px dashed #222;
+      padding: 6px 16px;
+      border-radius: 10px;
+      background-color: #fff5cc;
+      color: #111;
     }
 
     .info-direccion {
       display: flex;
       justify-content: space-between;
-      margin-top: 10px;
-      font-size: 22px;
+      margin-top: 16px;
+      font-size: 18px;
+      gap: 20px;
     }
 
     .info-box {
@@ -148,36 +159,47 @@
     }
 
     .info-box p {
-      margin: 5px 0;
-      font-size: 22px;
+      margin: 6px 0;
+      font-size: 18px;
+      color: #444;
     }
 
     .info-box span {
       font-weight: bold;
-      font-size: 24px;
+      color: #000;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
+      border: 1px solid #aaa;
+    }
+
+    th {
+      background-color: #f0eacb;
+      color: #222;
+      font-weight: bold;
     }
 
     table, th, td {
-      border: 1px solid black;
+      border: 1px solid #999;
     }
 
     th, td {
-      padding: 8px;
+      padding: 10px;
       text-align: center;
-      height: 30px;
+      height: 40px;
+      font-size: 16px;
     }
 
     #totalNota {
       text-align: right;
-      margin-top: 10px;
+      margin-top: 15px;
       font-weight: bold;
       font-size: 20px;
+      color: #222;
+      padding-right: 10px;
     }
   </style>
 </head>
@@ -335,10 +357,7 @@
     }
 
     if (servicioChecked && servicio > 0) {
-      tabla.innerHTML += `
-        <tr><td colspan="4">&nbsp;</td></tr>
-        <tr><td colspan="4">&nbsp;</td></tr>
-      `;
+      tabla.innerHTML += `<tr><td colspan="4">&nbsp;</td></tr>`;
       total += servicio;
       tabla.innerHTML += `
         <tr>
