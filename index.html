@@ -2,219 +2,384 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini Maps - Cálculo de Ruta</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Nota de Remisión</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    #mapa {
-      height: 500px;
+    body {
+      background-color: #fff8c4;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 20px;
     }
-    #modoSeleccion, #distancia {
-      margin-top: 10px;
+
+    .formulario {
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 30px;
+      background: #fffdf3;
+      border: 2px dashed #888;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
     }
-    /* Estilos para las instrucciones */
-    #instrucciones {
-      margin-top: 10px;
+
+    .formulario h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 20px;
     }
-    #listaInstrucciones li {
-      font-size: 1rem;
+
+    .grupo {
+      margin-bottom: 15px;
+    }
+
+    .grupo label {
+      font-weight: bold;
+      font-size: 18px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .grupo input, .grupo select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #999;
+      box-sizing: border-box;
+    }
+
+    .grupo-checkbox {
+      margin-bottom: 25px;
       padding: 10px;
-      border-bottom: 1px solid #f0f0f0;
-      background: #fafafa;
+      background: #fdf8e4;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
     }
-    #listaInstrucciones li:last-child {
-      border-bottom: none;
+
+    .grupo-checkbox label {
+      font-size: 18px;
+      font-weight: bold;
     }
-    .badge-step {
-      font-size: 1rem;
-      margin-right: 10px;
+
+    .grupo-flex {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .grupo-flex input {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .botones {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff9900;
+    }
+
+    /* --- NO MODIFICAR ESTA SECCIÓN DE ABAJO --- */
+
+    .nota {
+      width: 700px;
+      margin: auto;
+      background: white;
+      border: 2px dashed black;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .fila-arriba {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border: 1px solid black;
+      background-image: url('https://github.com/pabloadrianrojas03/pabloadrianrojas03.github.io/blob/main/RicosPollos/pollos.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .titulo-nota {
+      font-size: 36px;
+      font-weight: bold;
+      border: 2px solid black;
+      padding: 5px 20px;
+    }
+
+    .nombre-negocio {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .info-direccion {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 22px;
+    }
+
+    .info-box {
+      flex: 1;
+    }
+
+    .info-box p {
+      margin: 5px 0;
+      font-size: 22px;
+    }
+
+    .info-box span {
+      font-weight: bold;
+      font-size: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+      height: 30px;
+    }
+
+    #totalNota {
+      text-align: right;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container my-4">
-    <h1>Mini Maps - Cálculo de Ruta</h1>
 
-    <div class="form-group">
-      <label for="origen">Origen:</label>
-      <input type="text" class="form-control" id="origen" placeholder="Ej: Ciudad de México o 19.4326, -99.1332">
-    </div>
+<div class="formulario">
+  <h2>NOTAS - Ricos Pollos Uruapan</h2>
 
-    <div class="form-group">
-      <label for="destino">Destino:</label>
-      <input type="text" class="form-control" id="destino" placeholder="Ej: Otra dirección o 19.427, -99.133">
-    </div>
-
-    <!-- Botones para seleccionar dirección en el mapa -->
-    <button class="btn btn-secondary" onclick="actualizarModo('origen')">Seleccionar Origen en el Mapa</button>
-    <button class="btn btn-secondary" onclick="actualizarModo('destino')">Seleccionar Destino en el Mapa</button>
-    <br><br>
-
-    <button class="btn btn-primary" id="calcularRuta">Calcular Ruta</button>
-    <button class="btn btn-danger" id="limpiarMapa">Limpiar Mapa</button>
-
-    <p id="modoSeleccion" class="my-3">Modo: Ninguno</p>
-    <div id="distancia" class="mb-3"></div>
-
-    <!-- Apartado de instrucciones con formato estético mejorado -->
-    <div id="instrucciones" class="card">
-      <div class="card-header">Instrucciones de la Ruta</div>
-      <ol class="list-group list-group-flush" id="listaInstrucciones"></ol>
-    </div>
-
-    <div id="mapa" class="mt-3"></div>
+  <div class="grupo">
+    <label for="inputCalle">Calle</label>
+    <input type="text" id="inputCalle">
   </div>
 
-  <!-- Librerías -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <div class="grupo">
+    <label for="inputColonia">Colonia</label>
+    <input type="text" id="inputColonia">
+  </div>
 
-  <script>
-    // Inicializa el mapa centrado en Ciudad de México
-    var mapa = L.map('mapa').setView([19.4326, -99.1332], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(mapa);
+  <div class="grupo">
+    <label for="inputTelefono">Teléfono</label>
+    <input type="text" id="inputTelefono">
+  </div>
 
-    let markerOrigen, markerDestino, rutaLayer;
-    let modo = null;
+  <div class="grupo-checkbox">
+    <label><input type="checkbox" id="checkboxServicio" onchange="toggleServicio()"> Servicio de moto</label>
+    <div class="grupo-flex" style="display: none;" id="grupoServicio">
+      <input type="number" id="inputServicio" placeholder="Precio del servicio">
+    </div>
+  </div>
 
-    const txtOrigen = document.getElementById('origen');
-    const txtDestino = document.getElementById('destino');
-    const btnCalcular = document.getElementById('calcularRuta');
-    const btnLimpiar = document.getElementById('limpiarMapa');
-    const spanModo = document.getElementById('modoSeleccion');
-    const listaInstrucciones = document.getElementById('listaInstrucciones');
-    const distanciaTexto = document.getElementById('distancia');
+  <div class="grupo-checkbox">
+    <label><input type="checkbox" id="checkboxCostilla" onchange="toggleCostilla()"> Agregar costilla</label>
+    <div class="grupo-flex" style="display: none;" id="grupoCostilla">
+      <input type="number" id="inputCantidadCostilla" placeholder="Cantidad">
+      <input type="number" id="inputPrecioCostilla" placeholder="Precio unitario">
+    </div>
+  </div>
 
-    // Actualiza el modo para seleccionar marcadores en el mapa
-    function actualizarModo(nuevoModo) {
-      modo = nuevoModo;
-      spanModo.textContent = modo ? (modo === 'origen' ? 'Seleccionar Origen' : 'Seleccionar Destino') : 'Ninguno';
-      console.log("Modo actualizado a:", modo);
+  <div class="grupo">
+    <label for="precioPollo">Precio por pollo</label>
+    <input type="number" id="precioPollo" value="150">
+  </div>
+
+  <div class="grupo">
+    <label for="cantidadPollos">Cantidad de pollos</label>
+    <select id="cantidadPollos">
+      <option value="0">Selecciona</option>
+    </select>
+  </div>
+</div>
+
+<div class="nota" id="nota">
+  <div class="fila-arriba">
+    <div class="logo"></div>
+    <div class="nombre-negocio">Ricos Pollos Uruapan</div>
+    <div class="titulo-nota">NOTA</div>
+  </div>
+  <div class="info-direccion">
+    <div class="info-box">
+      <p>Calle: <span id="mostrarCalle"></span></p>
+      <p>Colonia: <span id="mostrarColonia"></span></p>
+    </div>
+    <div class="info-box">
+      <p>Teléfono: <span id="mostrarTelefono"></span></p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>CANTIDAD</th>
+        <th>DESCRIPCIÓN</th>
+        <th>PRECIO UNITARIO</th>
+        <th>IMPORTE</th>
+      </tr>
+    </thead>
+    <tbody id="tabla">
+    </tbody>
+  </table>
+
+  <div id="totalNota">Total: $0.00</div>
+</div>
+
+<div class="botones">
+  <button onclick="actualizarNota()">Generar Nota</button>
+  <button onclick="window.print()">Imprimir Nota</button>
+  <button onclick="guardarComoImagen()">Guardar como Imagen</button>
+  <button onclick="guardarComoPDF()">Guardar como PDF</button>
+</div>
+
+<script>
+  for (let i = 1; i <= 50; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    document.getElementById("cantidadPollos").appendChild(option);
+  }
+
+  function toggleServicio() {
+    const checked = document.getElementById("checkboxServicio").checked;
+    document.getElementById("grupoServicio").style.display = checked ? "flex" : "none";
+  }
+
+  function toggleCostilla() {
+    const checked = document.getElementById("checkboxCostilla").checked;
+    document.getElementById("grupoCostilla").style.display = checked ? "flex" : "none";
+  }
+
+  function actualizarNota() {
+    const calle = document.getElementById("inputCalle").value;
+    const colonia = document.getElementById("inputColonia").value;
+    const tel = document.getElementById("inputTelefono").value;
+    const servicioChecked = document.getElementById("checkboxServicio").checked;
+    const servicio = parseFloat(document.getElementById("inputServicio").value) || 0;
+    const precio = parseFloat(document.getElementById("precioPollo").value);
+    const cantidad = parseInt(document.getElementById("cantidadPollos").value);
+
+    const costillaChecked = document.getElementById("checkboxCostilla").checked;
+    const cantidadCostilla = parseInt(document.getElementById("inputCantidadCostilla").value) || 0;
+    const precioCostilla = parseFloat(document.getElementById("inputPrecioCostilla").value) || 0;
+
+    document.getElementById("mostrarCalle").textContent = calle;
+    document.getElementById("mostrarColonia").textContent = colonia;
+    document.getElementById("mostrarTelefono").textContent = tel;
+
+    const tabla = document.getElementById("tabla");
+    tabla.innerHTML = "";
+
+    let total = 0;
+
+    if (cantidad > 0) {
+      const importe = cantidad * precio;
+      total += importe;
+      tabla.innerHTML += `
+        <tr>
+          <td>${cantidad}</td>
+          <td>Pollo rostizado</td>
+          <td>$${precio.toFixed(2)}</td>
+          <td>$${importe.toFixed(2)}</td>
+        </tr>
+      `;
     }
 
-    // Al hacer clic en el mapa se coloca el marcador según el modo activo
-    mapa.on('click', function (e) {
-      if (!modo) return;
-      const { lat, lng } = e.latlng;
-      if (modo === 'origen') {
-        if (markerOrigen) mapa.removeLayer(markerOrigen);
-        markerOrigen = L.marker([lat, lng]).addTo(mapa).bindPopup('Origen').openPopup();
-        txtOrigen.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-      } else if (modo === 'destino') {
-        if (markerDestino) mapa.removeLayer(markerDestino);
-        markerDestino = L.marker([lat, lng]).addTo(mapa).bindPopup('Destino').openPopup();
-        txtDestino.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-      }
-      actualizarModo(null);
+    if (costillaChecked && cantidadCostilla > 0 && precioCostilla > 0) {
+      const importe = cantidadCostilla * precioCostilla;
+      total += importe;
+      tabla.innerHTML += `
+        <tr>
+          <td>${cantidadCostilla}</td>
+          <td>Costilla</td>
+          <td>$${precioCostilla.toFixed(2)}</td>
+          <td>$${importe.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    if (servicioChecked && servicio > 0) {
+      tabla.innerHTML += `
+        <tr><td colspan="4">&nbsp;</td></tr>
+        <tr><td colspan="4">&nbsp;</td></tr>
+      `;
+      total += servicio;
+      tabla.innerHTML += `
+        <tr>
+          <td>1</td>
+          <td>Servicio de moto</td>
+          <td>$${servicio.toFixed(2)}</td>
+          <td>$${servicio.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    const filasTotales = 12;
+    const filasActuales = tabla.rows.length;
+    for (let i = filasActuales; i < filasTotales; i++) {
+      tabla.innerHTML += `
+        <tr>
+          <td>&nbsp;</td><td></td><td></td><td></td>
+        </tr>
+      `;
+    }
+
+    document.getElementById("totalNota").textContent = `Total: $${total.toFixed(2)}`;
+  }
+
+  function guardarComoImagen() {
+    const nota = document.getElementById("nota");
+    html2canvas(nota, {
+      useCORS: true,
+      scale: 2,
+    }).then(function(canvas) {
+      const enlace = document.createElement('a');
+      enlace.href = canvas.toDataURL("image/png");
+      enlace.download = `nota_remision_${Date.now()}.png`;
+      enlace.click();
     });
+  }
 
-    // Función para obtener coordenadas usando Nominatim
-    async function obtenerCoordenadas(lugar) {
-      try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lugar)}`;
-        const respuesta = await fetch(url, { 
-          headers: { 'User-Agent': 'MiniMaps/1.0 (tu-email@ejemplo.com)' }
-        });
-        if (!respuesta.ok) throw new Error(`Error en la solicitud: ${respuesta.status}`);
-        const datos = await respuesta.json();
-        if (datos.length === 0) {
-          alert('No se encontraron coordenadas para el lugar ingresado.');
-          return null;
-        }
-        return [parseFloat(datos[0].lat), parseFloat(datos[0].lon)];
-      } catch (error) {
-        console.error('Error al obtener coordenadas:', error);
-        alert('Hubo un problema al buscar el lugar.');
-        return null;
-      }
-    }
+  function guardarComoPDF() {
+    window.print();
+  }
+</script>
 
-    // Función para calcular y dibujar la ruta usando OSRM
-    async function calcularRuta() {
-      let coordOrigen = txtOrigen.value.trim();
-      let coordDestino = txtDestino.value.trim();
-
-      if (!coordOrigen || !coordDestino) {
-        alert('Por favor, ingresa ambas direcciones.');
-        return;
-      }
-
-      // Si se ingresan coordenadas directamente, se usan; de lo contrario, se geocodifican
-      coordOrigen = coordOrigen.includes(',')
-        ? coordOrigen.split(',').map(n => Number(n.trim()))
-        : await obtenerCoordenadas(coordOrigen);
-      coordDestino = coordDestino.includes(',')
-        ? coordDestino.split(',').map(n => Number(n.trim()))
-        : await obtenerCoordenadas(coordDestino);
-
-      if (!coordOrigen || !coordDestino) {
-        alert("No se encontraron coordenadas válidas.");
-        return;
-      }
-
-      // Limpia marcadores y rutas anteriores
-      if (markerOrigen) mapa.removeLayer(markerOrigen);
-      if (markerDestino) mapa.removeLayer(markerDestino);
-      if (rutaLayer) mapa.removeLayer(rutaLayer);
-      listaInstrucciones.innerHTML = '';
-      distanciaTexto.textContent = '';
-
-      // Coloca marcadores en el mapa
-      markerOrigen = L.marker(coordOrigen).addTo(mapa).bindPopup('Origen').openPopup();
-      markerDestino = L.marker(coordDestino).addTo(mapa).bindPopup('Destino').openPopup();
-
-      // OSRM requiere "lon,lat" en la URL, por eso se invierte el orden
-      const urlRuta = `https://router.project-osrm.org/route/v1/driving/${coordOrigen[1]},${coordOrigen[0]};${coordDestino[1]},${coordDestino[0]}?overview=full&geometries=geojson&steps=true`;
-      console.log("URL para OSRM:", urlRuta);
-
-      try {
-        const respuesta = await fetch(urlRuta);
-        const datosRuta = await respuesta.json();
-        console.log("Respuesta de OSRM:", datosRuta);
-
-        if (datosRuta.code !== "Ok") {
-          alert("Error en OSRM: " + datosRuta.code);
-          return;
-        }
-
-        if (datosRuta.routes && datosRuta.routes.length > 0) {
-          const ruta = datosRuta.routes[0];
-          const coordenadasRuta = ruta.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-          rutaLayer = L.polyline(coordenadasRuta, { color: 'blue' }).addTo(mapa);
-          mapa.fitBounds(rutaLayer.getBounds());
-          distanciaTexto.textContent = `Distancia: ${(ruta.distance / 1000).toFixed(2)} km`;
-
-          // Muestra las instrucciones en un formato más atractivo
-          const steps = ruta.legs[0].steps;
-          steps.forEach((step, index) => {
-            let instruction = step.maneuver.instruction || '';
-            if (!instruction && step.name) {
-              instruction = 'Continúe por ' + step.name;
-            }
-            if (!instruction) {
-              instruction = 'Avance';
-            }
-            const li = document.createElement('li');
-            li.className = 'list-group-item';
-            li.innerHTML = `<span class="badge badge-primary badge-step">Paso ${index + 1}</span> ${instruction}`;
-            listaInstrucciones.appendChild(li);
-          });
-        } else {
-          alert('No se pudo obtener la ruta.');
-        }
-      } catch (error) {
-        console.error('Error al calcular la ruta:', error);
-        alert('Hubo un problema al calcular la ruta.');
-      }
-    }
-
-    btnCalcular.addEventListener('click', calcularRuta);
-    btnLimpiar.addEventListener('click', () => location.reload());
-  </script>
 </body>
 </html>
